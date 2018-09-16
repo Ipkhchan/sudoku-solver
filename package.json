@@ -1,0 +1,21 @@
+{
+  "name": "SudokuSolver",
+  "version": "1.0.0",
+  "description": "",
+  "main": "sudokuSolver.js",
+  "scripts": {
+    "start": "browser-sync start --server --files '*.css, *.html, *.js'",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Ipkhchan/sudoku-solver.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/Ipkhchan/sudoku-solver/issues"
+  },
+  "homepage": "https://github.com/Ipkhchan/sudoku-solver#readme"
+}

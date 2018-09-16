@@ -1,0 +1,246 @@
+/* * {
+  border: 3px solid black;
+} */
+
+/* VARIABLES */
+
+:root {
+    --accent-color: #3C99A3;
+    --highlight-color: #13474D;
+}
+
+/* UTILITY STYLES */
+
+.flex {
+  display: flex;
+}
+
+.flex-column {
+  flex-direction: column;
+}
+
+.flex-center {
+  justify-content: center;
+}
+
+.flex-align-center {
+  align-items: center;
+}
+
+.flex-end {
+  justify-content: flex-end;
+}
+
+.flex-between {
+  justify-content: space-between;
+}
+
+.flex-space-around {
+  justify-content: space-around;
+}
+
+.red {
+  color: red;
+}
+
+.button {
+  background-color: var(--accent-color);
+  border: none;
+  color: white;
+  height: 40px;
+  padding: 10px;
+  border-radius: 7px;
+  font-size: 1em;
+}
+
+.button:hover {
+  background-color: var(--highlight-color);
+  cursor: pointer;
+}
+
+/* GLOBAL STYELS */
+
+body {
+  font-family: 'Open Sans', sans-serif;
+  margin: 0;
+}
+
+/* CLASS STYLES */
+
+table {
+  margin: auto;
+  border-collapse: collapse;
+}
+
+td {
+  width: 7vw;
+  height: 7vw;
+  border: 3px solid black;
+}
+
+.cell {
+  width: 100%;
+  height: 100%;
+  text-align: center;
+  font-size: 5vw;
+  border-width: 0px;
+  color: black;
+  text-shadow: 0 0 0 #2196f3;
+}
+
+.cell:hover {
+  cursor: pointer;
+}
+
+.cell:focus {
+  border-width: 3px;
+  border-color: var(--accent-color);
+  border-style: solid;
+  box-sizing: border-box;
+}
+
+h1 {
+  text-align: center;
+}
+
+p {
+  display: inline;
+  margin: 20px;
+  text-align: center;
+}
+
+.bottom {
+  border-bottom: 6px solid black;
+}
+
+.right {
+  border-right: 6px solid black;
+}
+
+
+
+.submit {
+  width: 200px;
+  margin: 20px;
+  padding: 5px;
+  font-size: 20px;
+  border-radius: 30px;
+}
+
+.fileInput {
+  width: 0.1px;
+  height: 0.1px;
+  opacity: 0;
+  overflow: hidden;
+  position: absolute;
+  z-index: -1;
+}
+
+.fileInput + label {
+  font-size: 1em;
+  font-weight: 700;
+  color: white;
+  background-color: black;
+  display: inline-block;
+  cursor: pointer;
+  padding: 10px;
+  border-radius: 10px;
+  background-color: var(--accent-color);
+  height: 20px;
+}
+
+.fileInput:focus + label,
+.fileInput + label:hover {
+    background-color: var(--highlight-color);
+}
+
+.fileInputDiv {
+  /* border: 5px solid black; */
+  margin: 10px;
+}
+
+.fileSubmit {
+  margin: 10px;
+}
+
+img {
+  display: none;
+}
+
+.liveResults {
+  margin: 30px 0;
+}
+
+.liveResults > * {
+  width: 200px;
+}
+
+.sudokuClipping {
+  border: 3px solid black;
+  display: block;
+  margin: 20px;
+}
+
+.valueParsed {
+  height: 80px;
+  width: 80px;
+  font-size: 30px;
+  border: 3px solid black;
+  text-align: center;
+  vertical-align: middle;
+  line-height: 80px;
+  margin: 20px;
+}
+
+.canvasContainer {
+  position: relative;
+  margin: 20px;
+}
+
+.markupContainer {
+  position: absolute;
+  /* border: 5px solid red; */
+  top: 0;
+  left: 0;
+  right: 0;
+  width: 900px;
+  height: 900px;
+  margin: auto;
+  display: none;
+}
+
+.markupCanvas {
+  /* border: 5px solid red; */
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  /* width: 900px;
+  height: 900px; */
+  margin: auto;
+}
+
+.displayNone {
+  display: none;
+}
+
+.imageControls {
+  margin: 0 10vw;
+  border-top: 3px solid #dbdbdb;
+  border-bottom: 3px solid #dbdbdb;
+}
+
+.imageButtons {
+  margin-bottom: 20px;
+}
+
+.liveResults {
+  margin: 20px 10vw;
+  border-top: 3px solid #dbdbdb;
+  border-bottom: 3px solid #dbdbdb;
+}
+
+
+/* .scaleCanvas {
+  display: none;
+} */
