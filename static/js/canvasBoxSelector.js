@@ -2,7 +2,7 @@ var canvasBoxSelector = (() => {
   var drag = false,
       mouseX,
       mouseY,
-      closeEnough = (window.innerWidth > 800 ? 10 : 30),
+      closeEnough = (/Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent) ? 30 : 10),
       dragTL = dragBL = dragTR = dragBR = false,
       tl, tr, bl, br,
       ctx;

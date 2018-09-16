@@ -62,6 +62,8 @@ clipImage.addEventListener('mouseup', (e) => {
   imageClipper(...canvasBoxSelector.getCornerPositions(), sudokuCanvas);
 })
 
+
+
 submitImage.addEventListener("click", (e) => {
   e.preventDefault();
   var liveResults = document.querySelector('.liveResults');
