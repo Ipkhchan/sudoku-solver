@@ -2,7 +2,7 @@ var canvasBoxSelector = (() => {
   var drag = false,
       mouseX,
       mouseY,
-      closeEnough = 20,
+      closeEnough = 30,
       dragTL = dragBL = dragTR = dragBR = false,
       tl, tr, bl, br,
       ctx;
