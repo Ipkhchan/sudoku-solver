@@ -77,6 +77,8 @@ td {
   width: 7vw;
   height: 7vw;
   border: 3px solid black;
+  padding: 0;
+  margin: 0
 }
 
 .cell {
@@ -88,6 +90,8 @@ td {
   color: black;
   text-shadow: 0 0 0 #2196f3;
   box-sizing: border-box;
+  padding: 0;
+  margin: 0;
 }
 
 .cell:hover {

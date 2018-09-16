@@ -2,7 +2,7 @@ var canvasBoxSelector = (() => {
   var drag = false,
       mouseX,
       mouseY,
-      closeEnough = 30,
+      closeEnough = (window.innerWidth > 800 ? 10 : 30),
       dragTL = dragBL = dragTR = dragBR = false,
       tl, tr, bl, br,
       ctx;
@@ -101,13 +101,18 @@ var canvasBoxSelector = (() => {
     }
 
     function drawPolygon() {
-      ctx.fillStyle = "rgba(0,0,0,0.2)";
       ctx.beginPath();
+      ctx.strokeStyle = "#3C99A3";
+      ctx.fillStyle = "rgba(0,0,0,0.2)";
       ctx.moveTo(tl.x, tl.y);
       ctx.lineTo(tr.x, tr.y);
+      ctx.stroke();
       ctx.lineTo(br.x, br.y);
+      ctx.stroke();
       ctx.lineTo(bl.x, bl.y);
+      ctx.stroke();
       ctx.closePath();
+      ctx.stroke();
       ctx.fill();
     }
 
