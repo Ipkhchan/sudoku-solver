@@ -2,7 +2,7 @@ var canvasBoxSelector = (() => {
   var drag = false,
       mouseX,
       mouseY,
-      closeEnough = 10,
+      closeEnough = 20,
       dragTL = dragBL = dragTR = dragBR = false,
       tl, tr, bl, br,
       ctx;
@@ -12,6 +12,9 @@ var canvasBoxSelector = (() => {
     canvas.addEventListener('mousedown', mouseDown, false);
     canvas.addEventListener('mouseup', mouseUp, false);
     canvas.addEventListener('mousemove', mouseMove, false);
+    canvas.addEventListener('touchstart', mouseDown, false);
+    canvas.addEventListener('touchmove', mouseMove, false);
+    canvas.addEventListener('touchend', mouseUp, false);
 
     tl = {x: 300, y: 300};
     tr = {x: 600, y: 300};
@@ -19,9 +22,12 @@ var canvasBoxSelector = (() => {
     br = {x: 600, y:600};
 
     function mouseDown(e) {
+      // e.preventDefault();
       var canvasRect = canvas.getBoundingClientRect();
-      mouseX = e.clientX - canvasRect.left;
-      mouseY = e.clientY - canvasRect.top;
+      mouseX = (e.clientX || e.targetTouches[0].clientX) - canvasRect.left;
+      mouseY = (e.clientY || e.targetTouches[0].clientY) - canvasRect.top;
+
+      console.log("mousedown", mouseX, mouseY, e);
 
       if (checkCloseEnough(mouseX, tl.x) && checkCloseEnough(mouseY, tl.y)) {
           dragTL = true;
@@ -58,15 +64,19 @@ var canvasBoxSelector = (() => {
       return Math.abs(p1 - p2) < closeEnough;
     }
 
-    function mouseUp() {
+    function mouseUp(e) {
+      e.preventDefault();
       dragTL = dragTR = dragBL = dragBR = false;
     }
 
     function mouseMove(e) {
+      e.preventDefault();
       var canvasRect = canvas.getBoundingClientRect();
 
-      mouseX = e.clientX - canvasRect.left;
-      mouseY = e.clientY - canvasRect.top;
+      mouseX = (e.clientX || e.targetTouches[0].clientX) - canvasRect.left;
+      mouseY = (e.clientY || e.targetTouches[0].clientY) - canvasRect.top;
+
+      // console.log("mousemove", mouseX, mouseY, e);
 
       if (dragTL) {
           tl = {x: mouseX, y: mouseY};

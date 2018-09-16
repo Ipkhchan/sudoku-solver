@@ -70,6 +70,7 @@ body {
 table {
   margin: auto;
   border-collapse: collapse;
+  /* border: 1px solid black; */
 }
 
 td {
@@ -86,6 +87,7 @@ td {
   border-width: 0px;
   color: black;
   text-shadow: 0 0 0 #2196f3;
+  box-sizing: border-box;
 }
 
 .cell:hover {
@@ -240,7 +242,7 @@ img {
   border-bottom: 3px solid #dbdbdb;
 }
 
-
-/* .scaleCanvas {
-  display: none;
-} */
+.testTable {
+  height: 80%;
+  width: 80%;
+}
