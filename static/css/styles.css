@@ -121,11 +121,12 @@ p {
 }
 
 .intro {
-  margin: 20px;
+  margin-top: 20px;
   padding: 10px;
   border: 1px solid var(--accent-color);
   border-radius: 10px;
   font-size: 0.8em;
+  width: 90%;
 }
 
 .bottom {
