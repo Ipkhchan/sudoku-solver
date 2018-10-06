@@ -62,7 +62,7 @@ function imageClipper(tl, tr, br, bl, canvas) {
   }
 
 
-  ctx.drawImage(yStretchCanvas, 0, 0, 900, 900);
+  ctx.drawImage(yStretchCanvas, 0, 0, canvas.width, canvas.height);
 
   // cleanup
   document.body.removeChild(scaleCanvas);

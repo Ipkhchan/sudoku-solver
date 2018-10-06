@@ -1,8 +1,18 @@
+// TODO: rotate image capability, don't load tesseract from cdn, font sizing too small on IEMobile
+//implement other ways of solving sudoku, allow for selection of sample sudokus so don't have to take picture,
+//edge detection so don't have to select bounding box, prevent user from entering non-number values
+//on viewport change, update canvas size
+
+///package image onload and rotate into a module
+
 var submitSudoku = document.querySelector(".submit");
 var fileInput = document.querySelector('.fileInput');
 var submitImage = document.querySelector('.fileSubmit');
 var clipImage = document.querySelector('.clipImage')
 var image = document.querySelector('img');
+var rotateImgLeft = document.querySelector('.rotateImg .rLeft');
+var rotateImgRight = document.querySelector('.rotateImg .rRight');
+var cells = document.querySelectorAll('.cell');
 
 var sudokuCanvas = document.querySelector('.sudoku');
 var sudokuCtx = sudokuCanvas.getContext("2d");
@@ -13,6 +23,8 @@ var markupCtx = markupCanvas.getContext("2d");
 
 var valueParsed = document.querySelector('.valueParsed');
 var sudokuArray = [];
+
+
 
 function populateSudoku(colour) {
   for(var i=0; i<9; i++) {
@@ -25,6 +37,41 @@ function populateSudoku(colour) {
     })
   }
 }
+
+function rotateDegrees(degrees) {
+  const sudokuWidth = window.innerWidth * 0.8;
+  sudokuCtx.translate(sudokuCanvas.width/2, sudokuCanvas.width/2);
+  sudokuCtx.rotate(degrees*Math.PI/180);
+  sudokuCtx.translate(-sudokuCanvas.width/2, -sudokuCanvas.width/2)
+  sudokuCtx.drawImage(image, 0, 0, sudokuWidth, sudokuWidth);
+
+  let corners = canvasBoxSelector.getCornerPositions();
+  let center = {x: sudokuCanvas.width/2, y: sudokuCanvas.width/2};
+  let radians = degrees * (Math.PI/180);
+
+  if (degrees === 90) {
+    corners.unshift(corners.pop());
+  }
+  else if (degrees === -90) {
+    corners.push(corners.shift());
+  }
+
+  corners.forEach((corner) => {
+    const originX = corner.x - center.x;
+    const originY = corner.y - center.y;
+
+    corner.x = originX*Math.cos(radians) - originY*Math.sin(radians);
+    corner.y = originX*Math.sin(radians) + originY*Math.cos(radians);
+
+    corner.x += center.x;
+    corner.y += center.y;
+  });
+
+  canvasBoxSelector.draw(...corners);
+}
+
+rotateImgLeft.addEventListener("click", () => {rotateDegrees(-90)});
+rotateImgRight.addEventListener("click", () => {rotateDegrees(90)});
 
 submitSudoku.addEventListener("click", (e) => {
   e.preventDefault();
@@ -43,31 +90,112 @@ submitSudoku.addEventListener("click", (e) => {
 
 fileInput.addEventListener('change', (e) => {
   image.src = URL.createObjectURL(e.target.files[0]);
-  console.log("here");
 }, false);
 
+function detectSudokuEdges(sudokuCanvas) {
+  let srcCanny = cv.imread(sudokuCanvas);
+  let dstCanny = new cv.Mat();
+  cv.cvtColor(srcCanny, srcCanny, cv.COLOR_RGB2GRAY, 0);
+  cv.Canny(srcCanny, dstCanny, 50, 100, 3, false);
+  cv.imshow(sudokuCanvas, dstCanny);
+  srcCanny.delete(); dstCanny.delete();
+
+  let srcContour = cv.imread(sudokuCanvas);
+  let dstContour = cv.Mat.zeros(srcContour.cols, srcContour.rows, cv.CV_8UC3);
+  cv.cvtColor(srcContour, srcContour, cv.COLOR_RGBA2GRAY, 0);
+  cv.threshold(srcContour, srcContour, 120, 200, cv.THRESH_BINARY);
+  let contours = new cv.MatVector();
+  let hierarchy = new cv.Mat();
+  // You can try more different parameters
+  cv.findContours(srcContour, contours, hierarchy, cv.RETR_CCOMP, cv.CHAIN_APPROX_SIMPLE);
+
+  let largestContourIndex;
+  let largestContourSize = 0;
+
+  for (let i = 0; i < contours.size(); ++i) {
+    if (cv.contourArea(contours.get(i),false) > largestContourSize) {
+      largestContourSize = cv.contourArea(contours.get(i), false);
+      largestContourIndex = i;
+    }
+  }
+
+  const largestContourData = contours.get(largestContourIndex).data32S;
+
+  let x, y;
+  let tl = {x: largestContourData[0], y: largestContourData[1]};
+  let tr = {x: largestContourData[0], y: largestContourData[1]};
+  let bl = {x: largestContourData[0], y: largestContourData[1]};
+  let br = {x: largestContourData[0], y: largestContourData[1]};
+  let tlCheck = largestContourData[0] + largestContourData[1];
+  let trCheck = largestContourData[0] - largestContourData[1];
+  let blCheck = largestContourData[1] - largestContourData[0];
+  let brCheck = largestContourData[0] + largestContourData[1];
+
+
+  for (var i = 0; i < largestContourData.length; i+=2) {
+    x = largestContourData[i];
+    y = largestContourData[i+1];
+
+    if(x + y < tlCheck) {
+      tlCheck = x + y;
+      tl = {x: x, y: y};
+    }
+    else if(x - y > trCheck) {
+      trCheck = x - y;
+      tr = {x: x, y: y}
+    }
+    else if(y -x > blCheck) {
+      blCheck = y - x;
+      bl = {x: x, y: y}
+    }
+    else if (x + y > brCheck) {
+      brCheck = x + y;
+      br = {x: x, y: y}
+    }
+  }
+
+  sudokuCtx.drawImage(image,0,0, sudokuCanvas.width, sudokuCanvas.height);
+  sudokuCtx.save();
+  markupCtx.save();
+  canvasBoxSelector.init(markupCanvas, tl, tr, br, bl);
+  srcContour.delete(); dstContour.delete(); contours.delete(); hierarchy.delete();
+}
+
 image.onload = function() {
+  const sudokuWidth = window.innerWidth * 0.8;
+
   document.querySelector('.imageControls').style.display= "block";
   document.querySelector('.canvasContainer').style.display= "block";
-  sudokuCanvas.setAttribute("height", "900");
-  sudokuCanvas.setAttribute("width", "900");
-  markupCanvas.setAttribute("height", "900");
-  markupCanvas.setAttribute("width", "900");
-  sudokuCtx.drawImage(image,0,0, 900, 900);
-  canvasBoxSelector.init(markupCanvas);
+  sudokuCanvas.setAttribute("height", `${sudokuWidth}`);
+  sudokuCanvas.setAttribute("width", `${sudokuWidth}`);
+  markupCanvas.setAttribute("height", `${sudokuWidth}`);
+  markupCanvas.setAttribute("width", `${sudokuWidth}`);
+
+  sudokuCtx.drawImage(image,0,0, sudokuWidth, sudokuWidth);
+  detectSudokuEdges(sudokuCanvas);
 }
 
 clipImage.addEventListener('mouseup', (e) => {
   e.preventDefault();
+  sudokuCtx.restore();
+  markupCtx.restore();
   imageClipper(...canvasBoxSelector.getCornerPositions(), sudokuCanvas);
 })
 
-
+cells.forEach((cell) => {
+  cell.addEventListener('keydown', (e) => {
+    if (e.keyCode > 57 || (cell.value && (e.keyCode > 46))) {
+      e.preventDefault();
+    }
+  })
+});
 
 submitImage.addEventListener("click", (e) => {
   e.preventDefault();
+  canvasBoxSelector.stop();
   var liveResults = document.querySelector('.liveResults');
   liveResults.style.display= "flex";
+  document.querySelector('.cvAlert').style.display = "block";
   $('html').animate({scrollTop: liveResults.getBoundingClientRect().top + document.documentElement.scrollTop - window.innerHeight/2 + liveResults.getBoundingClientRect().height/2}, 'slow');
   //which canvas to put the live image clipping on
   //which canvas to put the live results on
@@ -80,6 +208,10 @@ submitImage.addEventListener("click", (e) => {
 
   var rowPromises = [];
 
+  const gridDist = sudokuCanvas.width/9;
+  const clipWidth = gridDist*0.7;
+  const offsetWidth = gridDist*0.15;
+
   for (let i =0; i <9; i++) {
     rowPromises.push((() => {
       var recognizeNumber = Promise.resolve();
@@ -89,15 +221,17 @@ submitImage.addEventListener("click", (e) => {
         recognizeNumber= recognizeNumber
           .then(() => {
             return Promise.all([Promise.resolve(
-              Tesseract.recognize(getClipping(10 + (j*100),10 + (i*100),80,80))
+              Tesseract.recognize(getClipping(offsetWidth + (j*gridDist),offsetWidth + (i*gridDist),clipWidth,clipWidth))
               // Tesseract.recognize(getClipping((j*100)-10,(i*100)-10,120,120))
-            ), getClipping(10 +(j*100),10 +(i*100),80,80)])
+            ), getClipping(offsetWidth +(j*gridDist),offsetWidth +(i*gridDist),clipWidth,clipWidth)])
           })
           .then(([result, sudokuClipping]) => {
             console.log("result", result);
             result = parseInt(result.text.slice(0,1)) || "";
             rowArray.push(result);
-            liveClippingCtx.putImageData(sudokuClipping, 0, 0);
+            createImageBitmap(sudokuClipping).then(function(clippingBitmap) {
+                liveClippingCtx.drawImage(clippingBitmap, 0, 0, liveClippingCanvas.width, liveClippingCanvas.height);
+            });
             valueParsed.innerHTML = result;
             return rowArray;
           })
@@ -112,3 +246,8 @@ submitImage.addEventListener("click", (e) => {
     populateSudoku("black");
   })
 })
+
+function onOpenCvReady() {
+  console.log("OpenCV is ready!");
+  fileInput.classList.add("active");
+}

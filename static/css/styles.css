@@ -43,6 +43,11 @@
   color: red;
 }
 
+.alignCenter {
+  text-align: center;
+  margin: auto;
+}
+
 .button {
   background-color: var(--accent-color);
   border: none;
@@ -76,7 +81,7 @@ table {
 td {
   width: 7vw;
   height: 7vw;
-  border: 3px solid black;
+  border: 2px solid black;
   padding: 0;
   margin: 0
 }
@@ -116,11 +121,11 @@ p {
 }
 
 .bottom {
-  border-bottom: 6px solid black;
+  border-bottom: 4px solid black;
 }
 
 .right {
-  border-right: 6px solid black;
+  border-right: 4px solid black;
 }
 
 
@@ -151,14 +156,24 @@ p {
   cursor: pointer;
   padding: 10px;
   border-radius: 10px;
-  background-color: var(--accent-color);
+  background-color: #DBDBDB;
   height: 20px;
 }
 
-.fileInput:focus + label,
 .fileInput + label:hover {
+  cursor: default;
+}
+
+.fileInput.active:focus + label,
+.fileInput.active + label:hover {
     background-color: var(--highlight-color);
 }
+
+.fileInput.active + label {
+  background-color: var(--accent-color);
+}
+
+
 
 .fileInputDiv {
   /* border: 5px solid black; */
@@ -236,10 +251,6 @@ img {
   border-bottom: 3px solid #dbdbdb;
 }
 
-.imageButtons {
-  margin-bottom: 20px;
-}
-
 .liveResults {
   margin: 20px 10vw;
   border-top: 3px solid #dbdbdb;
@@ -250,3 +261,55 @@ img {
   height: 80%;
   width: 80%;
 }
+
+@media only screen and (max-width: 500px) {
+  p, .fileInput + label {
+    font-size: 12px;
+  }
+
+  .fileInput + label {
+    height: 15px;
+  }
+
+  td {
+    border: 1px solid black;
+  }
+
+  .bottom {
+    border-bottom: 2px solid black;
+  }
+
+  .right {
+    border-right: 2px solid black;
+  }
+
+  .submit {
+    width: 130px;
+    height: 30px;
+    margin: 20px;
+    padding: 2px;
+    font-size: 15px;
+    border-radius: 20px;
+  }
+
+  .fileInputDiv {
+    flex-direction: column;
+    margin-bottom: 40px;
+  }
+}
+
+  .rotateImg p {
+    font-size: 3em;
+    margin-bottom: 20px;
+    font-weight: bold;
+  }
+
+  .rotateImg p:hover {
+    color: var(--accent-color);
+    cursor: pointer;
+  }
+
+  .cvAlert {
+    display: none;
+    margin: 20px;
+  }

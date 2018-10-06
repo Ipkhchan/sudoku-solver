@@ -7,8 +7,11 @@
     <link rel="stylesheet" href="./static/css/normalize.css">
     <link rel="stylesheet" href="./static/css/styles.css">
     <link href="https://fonts.googleapis.com/css?family=Open+Sans" rel="stylesheet">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
     <script src='https://cdn.rawgit.com/naptha/tesseract.js/1.0.10/dist/tesseract.js'></script>
+    <!-- <script async src="./static/js/opencv.js" onload="onOpenCvReady();" type="text/javascript"></script> -->
+    <script async src="https://docs.opencv.org/master/opencv.js" onLoad="onOpenCvReady();" type="text/javascript"></script>
   </head>
   <body>
     <h1>Sudoku Solver</h1>
@@ -28,11 +31,20 @@
         <button type="button" name="button" class="clipImage button">Clip Image</button>
         <input type="submit" class="fileSubmit button"/>
       </div>
+      <div class= "alignCenter">Rotate Image: </div>
+      <div class = "flex flex-center rotateImg">
+        <p class= "rLeft">
+          &#8630;
+        </p>
+        <p class= "rRight">
+          &#8631;
+        </p>
+      </div>
     </div>
 
     <div class="canvasContainer displayNone">
       <div class="sudokuContainer flex flex-center">
-        <canvas class="sudoku" height="0" width="0"></canvas>
+        <canvas class="sudoku" id="sudoku" height="0" width="0"></canvas>
       </div>
       <canvas class="markupCanvas" height="0" width="0"></canvas>
     </div>
@@ -150,6 +162,10 @@
           <td><input class="cell" type="text"/></td>
         </tr>
       </table>
+
+      <div class= "cvAlert alignCenter">
+        Computer vision isn't perfect! Please check the grid numbers match your Sudoku before submitting!
+      </div>
 
       <div class="flex flex-center">
         <input class="submit button" type="submit" value="Solve!">
