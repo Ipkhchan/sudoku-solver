@@ -78,13 +78,8 @@ var canvasBoxSelector = (() => {
         dragBR = true;
 
     }
-    // (5.) none of them
-    else {
-        // handle not resizing
-    }
 
     draw();
-
   }
 
   function checkCloseEnough(p1, p2) {

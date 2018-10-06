@@ -120,6 +120,14 @@ p {
   text-align: center;
 }
 
+.intro {
+  margin: 20px;
+  padding: 10px;
+  border: 1px solid var(--accent-color);
+  border-radius: 10px;
+  font-size: 0.8em;
+}
+
 .bottom {
   border-bottom: 4px solid black;
 }
@@ -167,6 +175,7 @@ p {
 .fileInput.active:focus + label,
 .fileInput.active + label:hover {
     background-color: var(--highlight-color);
+    cursor: pointer;
 }
 
 .fileInput.active + label {

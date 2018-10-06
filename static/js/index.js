@@ -1,10 +1,3 @@
-// TODO: rotate image capability, don't load tesseract from cdn, font sizing too small on IEMobile
-//implement other ways of solving sudoku, allow for selection of sample sudokus so don't have to take picture,
-//edge detection so don't have to select bounding box, prevent user from entering non-number values
-//on viewport change, update canvas size
-
-///package image onload and rotate into a module
-
 var submitSudoku = document.querySelector(".submit");
 var fileInput = document.querySelector('.fileInput');
 var submitImage = document.querySelector('.fileSubmit');
@@ -23,8 +16,6 @@ var markupCtx = markupCanvas.getContext("2d");
 
 var valueParsed = document.querySelector('.valueParsed');
 var sudokuArray = [];
-
-
 
 function populateSudoku(colour) {
   for(var i=0; i<9; i++) {
@@ -70,28 +61,6 @@ function rotateDegrees(degrees) {
   canvasBoxSelector.draw(...corners);
 }
 
-rotateImgLeft.addEventListener("click", () => {rotateDegrees(-90)});
-rotateImgRight.addEventListener("click", () => {rotateDegrees(90)});
-
-submitSudoku.addEventListener("click", (e) => {
-  e.preventDefault();
-  for(var i=0; i <9; i++) {
-    var row = document.querySelectorAll(`.row-${i} .cell`);
-    var rowVals = [];
-    row.forEach((input) => {
-      rowVals.push(parseInt(input.value) || '');
-    })
-    sudokuArray.push(rowVals);
-  }
-
-  solveSudoku(sudokuArray);
-  populateSudoku("red");
-})
-
-fileInput.addEventListener('change', (e) => {
-  image.src = URL.createObjectURL(e.target.files[0]);
-}, false);
-
 function detectSudokuEdges(sudokuCanvas) {
   let srcCanny = cv.imread(sudokuCanvas);
   let dstCanny = new cv.Mat();
@@ -106,7 +75,6 @@ function detectSudokuEdges(sudokuCanvas) {
   cv.threshold(srcContour, srcContour, 120, 200, cv.THRESH_BINARY);
   let contours = new cv.MatVector();
   let hierarchy = new cv.Mat();
-  // You can try more different parameters
   cv.findContours(srcContour, contours, hierarchy, cv.RETR_CCOMP, cv.CHAIN_APPROX_SIMPLE);
 
   let largestContourIndex;
@@ -122,10 +90,11 @@ function detectSudokuEdges(sudokuCanvas) {
   const largestContourData = contours.get(largestContourIndex).data32S;
 
   let x, y;
-  let tl = {x: largestContourData[0], y: largestContourData[1]};
-  let tr = {x: largestContourData[0], y: largestContourData[1]};
-  let bl = {x: largestContourData[0], y: largestContourData[1]};
-  let br = {x: largestContourData[0], y: largestContourData[1]};
+  var tl, tr, bl, br;
+  [tl, tr, bl, br].forEach((corner) => {
+    corner = {x: largestContourData[0], y: largestContourData[1]};
+  })
+
   let tlCheck = largestContourData[0] + largestContourData[1];
   let trCheck = largestContourData[0] - largestContourData[1];
   let blCheck = largestContourData[1] - largestContourData[0];
@@ -161,45 +130,13 @@ function detectSudokuEdges(sudokuCanvas) {
   srcContour.delete(); dstContour.delete(); contours.delete(); hierarchy.delete();
 }
 
-image.onload = function() {
-  const sudokuWidth = window.innerWidth * 0.8;
-
-  document.querySelector('.imageControls').style.display= "block";
-  document.querySelector('.canvasContainer').style.display= "block";
-  sudokuCanvas.setAttribute("height", `${sudokuWidth}`);
-  sudokuCanvas.setAttribute("width", `${sudokuWidth}`);
-  markupCanvas.setAttribute("height", `${sudokuWidth}`);
-  markupCanvas.setAttribute("width", `${sudokuWidth}`);
-
-  sudokuCtx.drawImage(image,0,0, sudokuWidth, sudokuWidth);
-  detectSudokuEdges(sudokuCanvas);
-}
-
-clipImage.addEventListener('mouseup', (e) => {
-  e.preventDefault();
-  sudokuCtx.restore();
-  markupCtx.restore();
-  imageClipper(...canvasBoxSelector.getCornerPositions(), sudokuCanvas);
-})
-
-cells.forEach((cell) => {
-  cell.addEventListener('keydown', (e) => {
-    if (e.keyCode > 57 || (cell.value && (e.keyCode > 46))) {
-      e.preventDefault();
-    }
-  })
-});
-
-submitImage.addEventListener("click", (e) => {
+function handleImageSubmit(e) {
   e.preventDefault();
   canvasBoxSelector.stop();
   var liveResults = document.querySelector('.liveResults');
   liveResults.style.display= "flex";
   document.querySelector('.cvAlert').style.display = "block";
   $('html').animate({scrollTop: liveResults.getBoundingClientRect().top + document.documentElement.scrollTop - window.innerHeight/2 + liveResults.getBoundingClientRect().height/2}, 'slow');
-  //which canvas to put the live image clipping on
-  //which canvas to put the live results on
-
 
   function getClipping(x,y,xLength,yLength) {
     var sudokuClipping = sudokuCtx.getImageData(x,y,xLength,yLength);
@@ -245,9 +182,61 @@ submitImage.addEventListener("click", (e) => {
     sudokuArray = result;
     populateSudoku("black");
   })
-})
+}
+
+function handleImageClip(e) {
+  e.preventDefault();
+  sudokuCtx.restore();
+  markupCtx.restore();
+  imageClipper(...canvasBoxSelector.getCornerPositions(), sudokuCanvas);
+}
 
 function onOpenCvReady() {
   console.log("OpenCV is ready!");
   fileInput.classList.add("active");
 }
+
+function handleSudokuSubmit(e) {
+  e.preventDefault();
+  for(var i=0; i <9; i++) {
+    var row = document.querySelectorAll(`.row-${i} .cell`);
+    var rowVals = [];
+    row.forEach((input) => {
+      rowVals.push(parseInt(input.value) || '');
+    })
+    sudokuArray.push(rowVals);
+  }
+
+  solveSudoku(sudokuArray);
+  populateSudoku("red");
+}
+
+function handleImageLoad() {
+  const sudokuWidth = window.innerWidth * 0.8;
+
+  document.querySelector('.imageControls').style.display= "block";
+  document.querySelector('.canvasContainer').style.display= "block";
+  sudokuCanvas.setAttribute("height", `${sudokuWidth}`);
+  sudokuCanvas.setAttribute("width", `${sudokuWidth}`);
+  markupCanvas.setAttribute("height", `${sudokuWidth}`);
+  markupCanvas.setAttribute("width", `${sudokuWidth}`);
+
+  sudokuCtx.drawImage(image,0,0, sudokuWidth, sudokuWidth);
+  detectSudokuEdges(sudokuCanvas);
+}
+
+cells.forEach((cell) => {
+  cell.addEventListener('keydown', (e) => {
+    if (e.keyCode > 57 || (cell.value && (e.keyCode > 46))) {
+      e.preventDefault();
+    }
+  })
+});
+
+fileInput.addEventListener('change', (e) => {image.src = URL.createObjectURL(e.target.files[0]);}, false);
+image.onload = handleImageLoad;
+rotateImgLeft.addEventListener("click", () => {rotateDegrees(-90)});
+rotateImgRight.addEventListener("click", () => {rotateDegrees(90)});
+clipImage.addEventListener('mouseup', handleImageClip);
+submitImage.addEventListener("click", handleImageSubmit);
+submitSudoku.addEventListener("click", handleSudokuSubmit);
