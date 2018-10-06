@@ -6,6 +6,7 @@ var image = document.querySelector('img');
 var rotateImgLeft = document.querySelector('.rotateImg .rLeft');
 var rotateImgRight = document.querySelector('.rotateImg .rRight');
 var cells = document.querySelectorAll('.cell');
+var openCV = document.querySelector('#openCV');
 
 var sudokuCanvas = document.querySelector('.sudoku');
 var sudokuCtx = sudokuCanvas.getContext("2d");
@@ -191,7 +192,7 @@ function handleImageClip(e) {
   imageClipper(...canvasBoxSelector.getCornerPositions(), sudokuCanvas);
 }
 
-function onOpenCvReady() {
+openCV.onload = function onOpenCvReady() {
   console.log("OpenCV is ready!");
   fileInput.classList.add("active");
 }
