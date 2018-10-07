@@ -3,10 +3,13 @@ var fileInput = document.querySelector('.fileInput');
 var submitImage = document.querySelector('.fileSubmit');
 var clipImage = document.querySelector('.clipImage')
 var image = document.querySelector('img');
+var imageCanvas = document.querySelector('.imgCanvas');
+var imageCtx = imageCanvas.getContext("2d");
 var rotateImgLeft = document.querySelector('.rotateImg .rLeft');
 var rotateImgRight = document.querySelector('.rotateImg .rRight');
 var cells = document.querySelectorAll('.cell');
 var openCV = document.querySelector('#openCV');
+var sampleButton = document.querySelector('.sudoku-sample');
 
 var sudokuCanvas = document.querySelector('.sudoku');
 var sudokuCtx = sudokuCanvas.getContext("2d");
@@ -32,10 +35,11 @@ function populateSudoku(colour) {
 
 function rotateDegrees(degrees) {
   const sudokuWidth = window.innerWidth * 0.8;
+
   sudokuCtx.translate(sudokuCanvas.width/2, sudokuCanvas.width/2);
   sudokuCtx.rotate(degrees*Math.PI/180);
   sudokuCtx.translate(-sudokuCanvas.width/2, -sudokuCanvas.width/2)
-  sudokuCtx.drawImage(image, 0, 0, sudokuWidth, sudokuWidth);
+  sudokuCtx.drawImage(imageCanvas, 0, 0, sudokuCanvas.width, sudokuCanvas.width);
 
   let corners = canvasBoxSelector.getCornerPositions();
   let center = {x: sudokuCanvas.width/2, y: sudokuCanvas.width/2};
@@ -90,6 +94,8 @@ function detectSudokuEdges(sudokuCanvas) {
 
   const largestContourData = contours.get(largestContourIndex).data32S;
 
+  console.log("largestContourData", largestContourData);
+
   let x, y;
   var tl, tr, bl, br;
   [tl, tr, bl, br].forEach((corner) => {
@@ -124,7 +130,9 @@ function detectSudokuEdges(sudokuCanvas) {
     }
   }
 
-  sudokuCtx.drawImage(image,0,0, sudokuCanvas.width, sudokuCanvas.height);
+  console.log('openCV', tl, tr, bl, br);
+
+  sudokuCtx.drawImage(imageCanvas,0,0, sudokuCanvas.width, sudokuCanvas.height);
   sudokuCtx.save();
   markupCtx.save();
   canvasBoxSelector.init(markupCanvas, tl, tr, br, bl);
@@ -191,6 +199,9 @@ function handleImageClip(e) {
   sudokuCtx.restore();
   markupCtx.restore();
   imageClipper(...canvasBoxSelector.getCornerPositions(), sudokuCanvas);
+  imageCtx.drawImage(sudokuCanvas, 0, 0, sudokuCanvas.width, sudokuCanvas.width);
+  // image.src = sudokuCanvas.toDataURL("image/png");
+  // console.log(image);
 }
 
 openCV.onload = function onOpenCvReady() {
@@ -215,7 +226,8 @@ function handleSudokuSubmit(e) {
 }
 
 function handleImageLoad() {
-  const sudokuWidth = window.innerWidth * 0.8;
+  console.log("here");
+  const sudokuWidth = (window.innerWidth < window.innerHeight ? window.innerWidth * 0.8 : window.innerHeight*0.8);
 
   document.querySelector('.imageControls').style.display= "block";
   document.querySelector('.canvasContainer').style.display= "block";
@@ -223,8 +235,11 @@ function handleImageLoad() {
   sudokuCanvas.setAttribute("width", `${sudokuWidth}`);
   markupCanvas.setAttribute("height", `${sudokuWidth}`);
   markupCanvas.setAttribute("width", `${sudokuWidth}`);
+  imageCanvas.setAttribute("height", `${sudokuWidth}`);
+  imageCanvas.setAttribute("width", `${sudokuWidth}`);
 
-  sudokuCtx.drawImage(image,0,0, sudokuWidth, sudokuWidth);
+  imageCtx.drawImage(image, 0, 0, sudokuWidth, sudokuWidth);
+  sudokuCtx.drawImage(imageCanvas,0,0, sudokuWidth, sudokuWidth);
   detectSudokuEdges(sudokuCanvas);
 }
 
@@ -236,7 +251,13 @@ cells.forEach((cell) => {
   })
 });
 
+function useSampleSudoku() {
+  console.log(image);
+  image.src = "../../public/sudoku-sample.jpg";
+}
+
 fileInput.addEventListener('change', (e) => {image.src = URL.createObjectURL(e.target.files[0]);}, false);
+sampleButton.addEventListener('click', useSampleSudoku);
 image.onload = handleImageLoad;
 rotateImgLeft.addEventListener("click", () => {rotateDegrees(-90)});
 rotateImgRight.addEventListener("click", () => {rotateDegrees(90)});

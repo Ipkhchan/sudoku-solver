@@ -39,6 +39,8 @@ var canvasBoxSelector = (() => {
       br = botRight;
     }
 
+    console.log("drawing", tl, tr, bl, br);
+
     ctx.clearRect(0, 0, canvas.width, canvas.height);
     drawPolygon();
     drawCircle(tl.x, tl.y, closeEnough);
