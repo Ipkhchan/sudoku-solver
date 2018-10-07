@@ -152,6 +152,8 @@ function solveSudoku(sudokuArray) {
 
   //if a certain number eliminates the possibility that other missing cells in that column can be that value
 
+  console.log("sudokuArray", sudokuArray);
+  
   while(blanksLeft > 0) {
     var counter = blanksLeft;
 

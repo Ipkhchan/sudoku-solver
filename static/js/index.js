@@ -164,8 +164,9 @@ function handleImageSubmit(e) {
             ), getClipping(offsetWidth +(j*gridDist),offsetWidth +(i*gridDist),clipWidth,clipWidth)])
           })
           .then(([result, sudokuClipping]) => {
-            console.log("result", result);
-            result = parseInt(result.text.slice(0,1)) || "";
+            // console.log("result", result);
+            console.log("i", i, "j", j, "text", result.text.slice(0,1), "confidence",result.confidence);
+            result = (result.confidence > 70 ? parseInt(result.text.slice(0,1)) || "" : "");
             rowArray.push(result);
             createImageBitmap(sudokuClipping).then(function(clippingBitmap) {
                 liveClippingCtx.drawImage(clippingBitmap, 0, 0, liveClippingCanvas.width, liveClippingCanvas.height);
@@ -199,6 +200,7 @@ openCV.onload = function onOpenCvReady() {
 
 function handleSudokuSubmit(e) {
   e.preventDefault();
+  sudokuArray = [];
   for(var i=0; i <9; i++) {
     var row = document.querySelectorAll(`.row-${i} .cell`);
     var rowVals = [];
@@ -207,7 +209,7 @@ function handleSudokuSubmit(e) {
     })
     sudokuArray.push(rowVals);
   }
-
+  console.log("handleSudokuSubmit", sudokuArray);
   solveSudoku(sudokuArray);
   populateSudoku("red");
 }
